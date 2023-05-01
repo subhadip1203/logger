@@ -1,0 +1,40 @@
+version: '3.1'
+
+services:
+  nodeserver:
+    build: ./nodeserver
+    container_name: nodeserver
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file : 5
+    ports:
+      - 8081:8081
+    networks:
+      - logging_network
+  
+  fluentd:
+    platform: linux/amd64
+    build: ./fluentd
+    container_name: fluentd
+    user: root
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file : 5
+    volumes:
+      - /var/lib/docker/containers:/fluentd/log/containers  # docker default log locations = /var/lib/docker/containers
+      - ./fluentd/logs:/output/
+    
+
+  
+networks:
+  logging_network:
+
+
+
+
+# docker-compose -f docker-compose.override.yml up -d
+# docker-compose up --build
